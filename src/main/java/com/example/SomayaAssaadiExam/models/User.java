@@ -35,7 +35,15 @@ public class User implements UserDetails {
     List<Role> roles = new ArrayList<>();
     private int stock;
 
-    private String pseudo;
+    private String code;
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
     public String getEmail() {
         return email;
@@ -53,13 +61,7 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public String getPseudo() {
-        return pseudo;
-    }
 
-    public void setPseudo(String pseudo) {
-        this.pseudo = pseudo;
-    }
 
     public void setPassword(String password) {
         this.password = password;
@@ -86,6 +88,10 @@ public class User implements UserDetails {
         return res;
     }
 
+
+    public boolean validate(String code) {
+        return this.code != null && this.code.equals(code);
+    }
     @Override
     public String getPassword() {
         return password;
@@ -93,7 +99,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return pseudo;
+        return fullName;
     }
 
     @Override

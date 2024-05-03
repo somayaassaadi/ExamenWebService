@@ -1,6 +1,7 @@
 package com.example.SomayaAssaadiExam.serviceImpl;
 
 
+import com.example.SomayaAssaadiExam.models.Admin;
 import com.example.SomayaAssaadiExam.models.Role;
 import com.example.SomayaAssaadiExam.models.User;
 import com.example.SomayaAssaadiExam.repositories.UserRepo;
@@ -17,15 +18,19 @@ public class UserImpl implements UserService {
     @Autowired
     UserRepo userRepo;
 
+
+
     @Override
-    public Optional<User> getUSerByPseudo(String pseudo) {
-        return userRepo.findByPseudo(pseudo);
+    public Optional<User> getAdminByEmail(String email) {
+        return userRepo.findByEmail(email);
     }
 
     @Override
-    public Optional<User> getUSerByEmail(String email) {
-        return userRepo.findByEmail(email);
+    public Optional<User> getUserByFullName(String fullName) {
+        return Optional.empty();
     }
+
+
 
     @Override
     public void addRoleToUser(User user, Role role){
@@ -37,4 +42,6 @@ public class UserImpl implements UserService {
     public User createUser(User entity) {
         return userRepo.save(entity);
     }
+
+
 }

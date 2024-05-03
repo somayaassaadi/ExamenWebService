@@ -29,6 +29,7 @@ public class AuthImpl implements AuthService {
         return null;
     }
 
+
     @Override
     public User register(User entity, Role role) {
         String passwordEncoded = bCryptPasswordEncoder.encode(entity.getPassword());

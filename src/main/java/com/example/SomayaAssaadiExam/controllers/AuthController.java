@@ -30,7 +30,17 @@ public class AuthController {
 
 
     private ResponseEntity<?> userExisteResponse (User entity){
-        Optional<User> user = userService.getUSerByPseudo(entity.getEmail());
+        Optional<User> user = userService.getUserByFullName(entity.getFullName());
+        if(user.isPresent())
+            return new ResponseEntity<>(
+                    "pseudo existe déjà",
+                    HttpStatus.CONFLICT
+            );
+        return null;
+    }
+
+    private ResponseEntity<?> userExisteResponse (String email){
+        Optional<User> user = userService.getAdminByEmail(email);
         if(user.isPresent())
             return new ResponseEntity<>(
                     "pseudo existe déjà",
@@ -40,8 +50,8 @@ public class AuthController {
     }
 
     @PostMapping("admin/signup")
-    public ResponseEntity<?> amdinregister(@RequestBody User entity){
-        ResponseEntity<?> res = userExisteResponse(entity);
+    public ResponseEntity<?> amdinregister(@RequestParam("email") String email, @RequestParam("password") String password){
+        ResponseEntity<?> res = userExisteResponse(email);
         if (res != null)
             return res;
         Optional<Role> role = roleRepo.findByRoleName(Role.RoleEnum.ADMIN.name());
@@ -50,8 +60,11 @@ public class AuthController {
                     "Une erreur est servenue !",
                     HttpStatus.INTERNAL_SERVER_ERROR
             );
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
         return new ResponseEntity<>(
-                authService.register(entity, role.get()),
+                authService.register(user, role.get()),
                 HttpStatus.CREATED
         );
     }
@@ -60,7 +73,7 @@ public class AuthController {
     public ResponseEntity<?> loginadmin(@RequestBody Map<String, String> request){
         String email = request.get("email");
         String password = request.get("password");
-        Optional<User> user = userService.getUSerByPseudo(email);
+        Optional<User> user = userService.getAdminByEmail(email);
         if (user.isEmpty())
             return new ResponseEntity(
                     "User n'existe pas",
@@ -77,6 +90,7 @@ public class AuthController {
                 HttpStatus.OK
         );
     }
+
 
     @PostMapping("users/signup")
     public ResponseEntity<?> userRegister(@RequestBody User entity){
@@ -95,11 +109,12 @@ public class AuthController {
         );
     }
 
+
     @PostMapping("users/login")
     public ResponseEntity<?> loginuser(@RequestBody Map<String, String> request){
         String fullName = request.get("fullName");
         String password = request.get("password");
-        Optional<User> user = userService.getUSerByPseudo(fullName);
+        Optional<User> user = userService.getUserByFullName(fullName);
         if (user.isEmpty())
             return new ResponseEntity(
                     "User n'existe pas",
@@ -139,6 +154,14 @@ public class AuthController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUserById(@PathVariable Long userId) {
+        authService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
     }
 
 
