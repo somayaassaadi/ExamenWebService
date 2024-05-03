@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: SecurityPart2
+  datasource:
+    url: jdbc:mysql://localhost:3306/examen
+    username: root
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+  output:
+    ansi:
+      enabled: ALWAYS
